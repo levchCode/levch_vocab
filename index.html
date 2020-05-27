@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Учим слова</title>
+        
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.min.js"></script>
+    <link href="css.css" rel="stylesheet" type="text/css">
+    <link href="static/toolkit.css" rel="stylesheet">
+    <link href="static/application.css" rel="stylesheet">
+    
+    <style>
+      @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+        body {
+          width: 1px;
+          min-width: 100%;
+          *width: 100%;
+        }
+        #stage {
+          height: 1px;
+          overflow: auto;
+          min-height: 100vh;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
+    </style>
+  </head>
+
+
+<body data-gr-c-s-loaded="true">
+
+<div class="k  bqa bse">
+  <img class="z" src="static/pic.svg">
+  <div class="bqg ait">
+    <div class="e">
+      <div class="c">
+        <div class="fv gt">
+          <h1 class="bsf bsg">Учим слова</h1>
+          <br>
+          <br>
+          <div>
+            <h2>Параметры</h2>
+            Файл со словами <input type="file" onchange="load()" id="csv">
+            <br>
+            <br>
+            Направление <select id="dir">
+            <option>Русский-Английский</option>
+            <option>Английский-Русский</option>
+            </select>
+          </div>
+
+          <div>
+            <br>
+            <br>
+            <h2 id="word">Загрузите список слов</h2>
+            <br>
+            <br>
+            <input class="dm ox ap" type="button" value="Знаю" onclick="update()">
+            <input class="dm ox ap" type="button" value="Не знаю" onclick="addUnknown()">
+          </div>
+          <br>
+          <div>
+              <h2>Незнакомые слова</h2>
+              <ul id="unknown"> </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let word_list = []
+  let unknown_list = []
+
+  function load()
+  {
+      Papa.parse(document.getElementById("csv").files[0], {
+          download: true,
+          complete: function(results) {
+              word_list = results.data
+              word_list.shift()
+              newWord()
+          }
+      });
+  }
+  
+  function addUnknown()
+  {
+      var w = document.getElementById("word").innerHTML
+      if (!unknown_list.includes(w))
+      {
+          var node = document.createElement("LI"); 
+          var textnode = document.createTextNode(w)      
+          node.appendChild(textnode)
+          node.id = w                          
+          document.getElementById("unknown").appendChild(node)
+          unknown_list.push(w)
+      }
+      
+      newWord()
+  }
+
+  function update()
+  {
+      var ul = document.getElementById("unknown")
+      var w = document.getElementById("word").innerHTML
+      if (unknown_list.includes(w))
+      {
+          index = unknown_list.indexOf(w)
+          unknown_list.splice(index, 1)
+          ul.removeChild(document.getElementById(w));
+      }
+      
+      newWord()
+  }
+
+  function newWord()
+  {
+      var word = word_list[Math.floor(Math.random() * word_list.length)];
+      if (document.getElementById("dir").selectedIndex == 0)
+      {
+          document.getElementById("word").innerHTML = word[0]
+      }
+      else
+      {
+          document.getElementById("word").innerHTML = word[1]
+      }
+      
+  }
+
+  </script>
+</body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="UTF-8"> 
+<html>
+    <head>
+        <title>Учим слова</title>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.min.js"></script>
+    </head>
+    <body>
+    <h1>Учим слова</h1>
+    <div>
+        <h2>Параметры</h2>
+        Файл со словами <input type="file" onchange="load()" id="csv">
+        Направление <select id="dir">
+            <option>Русский-Английский</option>
+            <option>Английский-Русский</option>
+        </select>
+    </div>
+    <div>
+        <h2 id="word">Слово</h2>
+        <input type="button" value="Знаю" onclick="update()">
+        <input type="button" value="Не знаю" onclick="addUnknown()">
+    </div>
+    <div>
+        <h2>Незнакомые слова</h2>
+        <ul id="unknown">
+        </ul>
+    </div>
+
+
+    <script>
+    let word_list = []
+    let unknown_list = []
+
+    function randomNoRepeats(array) {
+        var copy = array.slice(0);
+        return function() {
+            if (copy.length < 1) { copy = array.slice(0); }
+            var index = Math.floor(Math.random() * copy.length);
+            var item = copy[index];
+            copy.splice(index, 1);
+            return item;
+        };
+    }
+
+    function load()
+    {
+        Papa.parse(document.getElementById("csv").files[0], {
+            download: true,
+            complete: function(results) {
+                word_list = results.data
+                word_list.shift()
+                newWord()
+            }
+        });
+    }
+    
+    function addUnknown()
+    {
+        var w = document.getElementById("word").innerHTML
+        if (!unknown_list.includes(w))
+        {
+            var node = document.createElement("LI"); 
+            var textnode = document.createTextNode(w)      
+            node.appendChild(textnode)
+            node.id = w                          
+            document.getElementById("unknown").appendChild(node)
+            unknown_list.push(w)
+        }
+        
+        newWord()
+    }
+
+    function update()
+    {
+        var ul = document.getElementById("unknown")
+        var w = document.getElementById("word").innerHTML
+        if (unknown_list.includes(w))
+        {
+            index = unknown_list.indexOf(w)
+            unknown_list.splice(index, 1)
+            ul.removeChild(document.getElementById(w));
+        }
+        
+        newWord()
+    }
+
+    function newWord()
+    {
+        var chooser = randomNoRepeats(word_list);
+        var word = chooser()
+        if (document.getElementById("dir").selectedIndex == 0)
+        {
+            document.getElementById("word").innerHTML = word[0]
+        }
+        else
+        {
+            document.getElementById("word").innerHTML = word[1]
+        }
+        
+    }
+
+    </script>
+    </body>
+</html>
